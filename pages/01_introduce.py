@@ -3,6 +3,11 @@ from datetime import date
 
 import streamlit as st
 
+from io import BytesIO
+from docx import Document
+from docx.shared import Pt
+
+
 # 이미지 아이콘을 쓰고 싶다면 PIL이 필요합니다(없어도 앱은 동작)
 try:
     from PIL import Image
@@ -270,3 +275,83 @@ with right:
         st.subheader("입력값(JSON)")
         st.json(profile)
 
+def make_docx(profile: dict) -> bytes:
+    doc = Document()
+
+    # 기본 폰트(선택): Word에서 한글 표시 안정성을 위해
+    style = doc.styles["Normal"]
+    style.font.name = "Malgun Gothic"
+    style.font.size = Pt(11)
+
+    doc.add_heading("자기소개서", level=1)
+
+    # 기본 정보
+    doc.add_paragraph(f"이름: {profile['name']}")
+    doc.add_paragraph(f"직함/역할: {profile['role']}")
+    contact = profile.get("contact", {})
+    doc.add_paragraph(
+        f"연락처: 이메일 {contact.get('email','-')} / "
+        f"전화 {contact.get('phone','-')} / "
+        f"지역 {contact.get('location','-')} / "
+        f"웹사이트 {contact.get('website','-')}"
+    )
+
+    doc.add_paragraph("")  # 빈 줄
+    doc.add_heading("한 줄 핵심 메시지", level=2)
+    doc.add_paragraph(profile.get("headline", ""))
+
+    doc.add_heading("자기소개", level=2)
+    doc.add_paragraph(profile.get("intro", ""))
+
+    doc.add_heading("강점", level=2)
+    strengths_text = profile.get("strengths", "").strip()
+    if strengths_text:
+        # "- "로 시작하는 줄을 불릿 리스트로 변환
+        for line in strengths_text.splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            if line.startswith("-"):
+                doc.add_paragraph(line.lstrip("-").strip(), style="List Bullet")
+            else:
+                doc.add_paragraph(line)
+    else:
+        doc.add_paragraph("-")
+
+    doc.add_heading("스킬", level=2)
+    skills = profile.get("skills", [])
+    doc.add_paragraph(", ".join(skills) if skills else "-")
+
+    doc.add_heading("경험(경력/프로젝트)", level=2)
+    exps = profile.get("experiences", [])
+    if not exps:
+        doc.add_paragraph("-")
+    else:
+        for exp in exps:
+            doc.add_heading(exp.get("title", ""), level=3)
+            org = exp.get("org", "-")
+            period = f"{exp.get('from','-')} ~ {exp.get('to','-')}"
+            doc.add_paragraph(f"{org} · {period}")
+            detail = exp.get("detail", "")
+            if detail:
+                doc.add_paragraph(detail)
+
+    doc.add_heading("지원 직무", level=2)
+    doc.add_paragraph(profile.get("target_role", "-") or "-")
+
+    doc.add_heading("지원 동기", level=2)
+    doc.add_paragraph(profile.get("motivation", "-") or "-")
+
+    # bytes로 저장
+    bio = BytesIO()
+    doc.save(bio)
+    return bio.getvalue()
+
+docx_bytes = make_docx(profile)
+
+st.download_button(
+    "📝 자기소개서(.docx) 다운로드",
+    data=docx_bytes,
+    file_name=f"자기소개서_{profile['name']}.docx",
+    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+)
