@@ -1,115 +1,70 @@
 import streamlit as st
-import time
-import pandas as pd
 
-# 1. 페이지 설정
-st.set_page_config(
-    page_title="MBTI 성향 분석기",
-    page_icon="✨",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+# 1. 페이지 기본 설정
+st.set_page_config(page_title="AI Strategy Hub", page_icon="🤖", layout="wide")
 
-# 2. 화려한 디자인을 위한 스타일 커스텀
-st.markdown("""
-    <style>
-    /* 메인 배경색 및 글꼴 */
-    .stApp {
-        background-color: #FDFEFF;
-    }
-    /* 카드 스타일 */
-    .result-card {
-        background-color: white;
-        padding: 2rem;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        border: 1px solid #E1E4E8;
-    }
-    /* 강조 텍스트 */
-    .highlight {
-        color: #6C63FF;
-        font-weight: bold;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+# 2. 간단한 데이터베이스 (가상 데이터)
+# 실제 앱을 만들 때는 이 부분을 JSON이나 CSV 파일로 관리하면 더 좋습니다.
+ai_tools = {
+    "글쓰기 및 분석": [
+        {
+            "name": "ChatGPT",
+            "strategy": "복잡한 추론과 데이터 분석에 활용하세요. 특히 o1/o3 모델은 문제 해결에 강력합니다.",
+            "video_url": "https://www.youtube.com/watch?v=0pL07P0U7P0", # 예시 URL
+            "resource": "https://openai.com/chatgpt"
+        },
+        {
+            "name": "Claude",
+            "strategy": "긴 문맥의 문서 분석이나 코딩 가이드가 필요할 때 Artifacts 기능을 활용해 보세요.",
+            "video_url": "https://www.youtube.com/watch?v=fS_n_Y_5hG0",
+            "resource": "https://claude.ai"
+        }
+    ],
+    "이미지 및 비디오": [
+        {
+            "name": "Midjourney",
+            "strategy": "예술적이고 감각적인 결과물이 필요할 때 상세 프롬프트 조합법을 익혀 사용하세요.",
+            "video_url": "https://www.youtube.com/watch?v=9oN_X7l0_4U",
+            "resource": "https://www.midjourney.com"
+        }
+    ],
+    "검색 및 리서치": [
+        {
+            "name": "Perplexity",
+            "strategy": "실시간 뉴스나 학술 자료를 찾을 때 출처 인용 기능을 통해 팩트 체크를 병행하세요.",
+            "video_url": "https://www.youtube.com/watch?v=7XGidM2_M04",
+            "resource": "https://www.perplexity.ai"
+        }
+    ]
+}
 
-# 3. 사이드바 (사용자 입력)
-with st.sidebar:
-    st.title("🧩 Profile")
-    name = st.text_input("당신의 이름은?", placeholder="홍길동")
-    st.write("---")
-    st.caption("질문에 솔직하게 답할수록 정확한 데이터가 산출됩니다.")
-    
-    # 테마 선택 (UI용)
-    theme_color = st.color_picker("분석 리포트 포인트 컬러 선택", "#6C63FF")
+# 3. 메인 화면 UI
+st.title("🤖 AI Strategy Hub")
+st.markdown("#### 2026년형 AI 도구 활용 전략 가이드")
+st.info("카테고리를 선택하고 각 도구의 최적 사용 전략을 확인하세요.")
 
-# 4. 메인 화면 레이아웃
-st.title("✨ AI MBTI Insight Dashboard")
-st.markdown(f"**{name if name else '사용자'}**님, 당신의 내면을 데이터로 시각화합니다.")
+# 카테고리 선택
+category = st.selectbox("🎯 관심 있는 분야를 선택하세요", list(ai_tools.keys()))
+
 st.divider()
 
-col1, col2 = st.columns([1, 1.2], gap="large")
+# 4. 도구별 카드 레이아웃
+for tool in ai_tools[category]:
+    with st.container():
+        col1, col2 = st.columns([1, 1.5], gap="medium")
+        
+        with col1:
+            st.subheader(f"✨ {tool['name']}")
+            st.markdown(f"**활용 전략:**\n{tool['strategy']}")
+            st.link_button(f"{tool['name']} 바로가기", tool['resource'])
+            
+        with col2:
+            st.markdown("**🎬 가이드 및 활용 사례 영상**")
+            # 유튜브 동영상 임베딩
+            st.video(tool['video_url'])
+            
+        st.write("") # 간격 조절
+        st.divider()
 
-# --- 왼쪽: 질문 섹션 ---
-with col1:
-    st.subheader("📝 Self-Assessment")
-    
-    with st.expander("1. 에너지의 방향", expanded=True):
-        q1 = st.select_slider(
-            "혼자 있을 때 에너지가 충전되나요, 사람들과 있을 때 충전되나요?",
-            options=["혼자가 좋아(I)", "중간", "사람이 좋아(E)"]
-        )
-    
-    with st.expander("2. 정보 인식 및 판단", expanded=True):
-        q2 = st.radio("문제를 해결할 때 더 중요하게 생각하는 것은?", 
-                      ["객관적 사실과 논리(T)", "주변 사람의 상황과 감정(F)"])
-        
-    with st.expander("3. 생활 양식", expanded=True):
-        q3 = st.checkbox("나는 계획이 틀어지면 스트레스를 받는다 (J/P)")
-
-    if st.button("데이터 분석 시작 →"):
-        with st.status("알고리즘 연산 중...", expanded=True) as status:
-            st.write("응답 패턴 분석 중...")
-            time.sleep(1)
-            st.write("유사 그룹 데이터 매칭 중...")
-            time.sleep(1)
-            status.update(label="분석 완료!", state="complete", expanded=False)
-        st.session_state['done'] = True
-        st.balloons()
-
-# --- 오른쪽: 결과 섹션 ---
-with col2:
-    if 'done' in st.session_state:
-        st.subheader("📊 Analysis Result")
-        
-        # 결과 카드 디자인
-        st.markdown(f"""
-        <div class="result-card">
-            <h3>분석 결과: <span class="highlight">ENFJ (사회운동가형)</span></h3>
-            <p>당신은 타인의 성장을 돕고 공동체의 화합을 중요시하는 리더십을 가지고 있습니다.</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        st.write("") # 간격
-        
-        # Streamlit 내장 차트를 이용한 시각화 (추가 라이브러리 불필요)
-        st.write("📍 **성향 지표(Metrics)**")
-        
-        m_col1, m_col2 = st.columns(2)
-        m_col1.metric("외향성(E)", "82%", "12%")
-        m_col2.metric("논리성(T)", "45%", "-5%")
-        
-        # 가상의 데이터 차트
-        chart_data = pd.DataFrame({
-            "지표": ["에너지", "직관", "논리", "계획"],
-            "수치": [80, 65, 45, 90]
-        })
-        st.bar_chart(data=chart_data, x="지표", y="수치", color=theme_color)
-        
-        st.success("💡 **Tip:** 당신은 오늘 협업을 할 때 가장 큰 성과를 낼 수 있습니다.")
-        
-    else:
-        st.info("왼쪽 문항을 완료하고 '분석 시작' 버튼을 클릭하면 결과 대시보드가 활성화됩니다.")
-        # 가상의 빈 차트 모양만 보여주기
-        st.image("https://via.placeholder.com/600x400.png?text=Waiting+for+Data+Analysis...", use_container_width=True)
-        
+# 5. 하단 정보
+st.caption("© 2026 AI Strategy Hub - 데이터는 최신 트렌드에 따라 지속적으로 업데이트됩니다.")
