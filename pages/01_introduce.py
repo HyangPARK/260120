@@ -4,8 +4,12 @@ from datetime import date
 import streamlit as st
 
 from io import BytesIO
-from docx import Document
-from docx.shared import Pt
+try:
+    from docx import Document
+    DOCX_AVAILABLE = True
+except ModuleNotFoundError:
+    DOCX_AVAILABLE = False
+
 
 
 # 이미지 아이콘을 쓰고 싶다면 PIL이 필요합니다(없어도 앱은 동작)
