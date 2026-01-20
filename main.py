@@ -111,4 +111,5 @@ with col2:
     else:
         st.info("왼쪽 문항을 완료하고 '분석 시작' 버튼을 클릭하면 결과 대시보드가 활성화됩니다.")
         # 가상의 빈 차트 모양만 보여주기
-        st.image("https://via.placeholder.com/600x400.
+        st.image("https://via.placeholder.com/600x400.png?text=Waiting+for+Data+Analysis...", use_container_width=True)
+        
