@@ -1,84 +1,112 @@
 import streamlit as st
 
-# 1. 페이지 설정
-st.set_page_config(page_title="Ultimate AI Strategy Guide", page_icon="💡", layout="wide")
+# 1. 캔디샵 느낌의 페이지 설정
+st.set_page_config(page_title="AI Candy Shop", page_icon="🍬", layout="wide")
 
-# 2. 확장된 AI 도구 데이터베이스
-ai_database = {
-    "💻 코딩 & 개발": [
-        {
-            "name": "GitHub Copilot",
-            "strategy": "단순 반복 코드는 주석으로 지시하고, 전체 프로젝트의 맥락을 이해시켜 리팩토링에 활용하세요.",
-            "video_url": "https://www.youtube.com/watch?v=Fi3AJZZregQ",
-            "resource": "https://github.com/features/copilot"
-        },
-        {
-            "name": "Cursor",
-            "strategy": "코드베이스 전체를 인덱싱하여 복잡한 버그 수정이나 라이브러리 마이그레이션에 사용하세요.",
-            "video_url": "https://www.youtube.com/watch?v=zv8Z_6ZzX88",
-            "resource": "https://www.cursor.com/"
-        }
-    ],
-    "🎨 이미지 & 디자인": [
-        {
-            "name": "Canva Magic Studio",
-            "strategy": "디자인 초보자라면 텍스트를 입력해 바로 템플릿을 생성하고, 배경 제거 및 매직 리사이즈 기능을 적극 활용하세요.",
-            "video_url": "https://www.youtube.com/watch?v=un95S_4XvXU",
-            "resource": "https://www.canva.com/magic-home/"
-        },
-        {
-            "name": "Leonardo.ai",
-            "strategy": "특정 화풍을 학습시킨 LoRA 모델을 선택하여 브랜드만의 일관된 캐릭터나 아이콘을 만드세요.",
-            "video_url": "https://www.youtube.com/watch?v=FjS6o9UfKzM",
-            "resource": "https://leonardo.ai/"
-        }
-    ],
-    "📈 마케팅 & 생산성": [
-        {
-            "name": "Gamma APP",
-            "strategy": "아이디어 메모만으로 발표 슬라이드를 만드세요. AI 편집기 기능을 사용해 전체 디자인 톤을 한 번에 변경할 수 있습니다.",
-            "video_url": "https://www.youtube.com/watch?v=uK8f_A6KIdM",
-            "resource": "https://gamma.app/"
-        },
-        {
-            "name": "Notion AI",
-            "strategy": "회의록 요약, 데이터베이스 속성 자동 채우기 기능을 통해 협업 효율을 극대화하세요.",
-            "video_url": "https://www.youtube.com/watch?v=vV_XpYf-2mI",
-            "resource": "https://www.notion.so/product/ai"
-        }
-    ]
+# 2. 귀여움을 한스푼 넣은 CSS 커스텀
+st.markdown("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap');
+    
+    html, body, [class*="css"]  {
+        font-family: 'Nanum Gothic', sans-serif;
+        background-color: #FFF5F7; /* 연한 핑크 배경 */
+    }
+    .stButton>button {
+        background-color: #FFB7CE;
+        color: white;
+        border-radius: 50px;
+        border: none;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+    .stButton>button:hover {
+        background-color: #FF8FAB;
+        transform: scale(1.05);
+    }
+    .strategy-card {
+        background-color: white;
+        padding: 20px;
+        border-radius: 20px;
+        border: 3px dashed #FFB7CE;
+        margin-bottom: 20px;
+    }
+    .step-box {
+        background-color: #F0F2FF;
+        padding: 10px 15px;
+        border-left: 5px solid #6C63FF;
+        border-radius: 5px;
+        margin: 10px 0;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# 3. 메인 타이틀
+st.title("🍬 AI Candy Shop")
+st.subheader("한 번 먹으면 멈출 수 없는 달콤한 AI 활용 레시피! 🍰")
+st.write("---")
+
+# 4. AI 도구별 구체적인 '시크릿 레시피' 데이터
+recipes = {
+    "✍️ 글쓰기 요정 (ChatGPT)": {
+        "intro": "복잡한 고민을 사르르 녹여주는 만능 요정이에요!",
+        "strategy": [
+            "**Step 1. 페르소나 입히기**: '너는 10년 차 베테랑 마케터야'라고 역할을 정해주세요.",
+            "**Step 2. 구체적인 재료 넣기**: 단순히 '글 써줘' 말고, '타겟은 20대, 말투는 다정하게, 글자 수는 500자로!'라고 주문하세요.",
+            "**Step 3. 피드백으로 간 맞추기**: 결과가 나오면 '조금 더 재미있게 수정해줘!'라고 추가 주문을 해보세요."
+        ],
+        "prompt_example": "📍 **복사해서 써보세요!**\n> \"너는 다정한 동화 작가야. '잠 안 오는 강아지'를 주인공으로 짧은 동화를 써줘. 5세 아이가 이해하기 쉬운 단어만 써야 해!\"",
+        "video": "https://www.youtube.com/watch?v=0pL07P0U7P0",
+        "link": "https://chatgpt.com"
+    },
+    "🎨 그림 그리는 꼬마 (Midjourney)": {
+        "intro": "상상 속의 풍경을 마법처럼 그려내는 친구예요!",
+        "strategy": [
+            "**Step 1. 스타일 키워드 추가**: 사진 같은 느낌을 원하면 '--v 6.0'이나 'photorealistic'을 꼭 붙여요.",
+            "**Step 2. 조명 조절하기**: 'Golden hour'나 'Soft lighting' 키워드로 분위기를 확 바꿀 수 있어요.",
+            "**Step 3. 화면 비율 정하기**: 인스타용은 '--ar 1:1', 영화 같은 느낌은 '--ar 16:9'를 뒤에 써주세요!"
+        ],
+        "prompt_example": "📍 **복사해서 써보세요!**\n> \"/imagine prompt: A cute white cat wearing a yellow raincoat in the rain, 3d render, claymation style, high detail --ar 1:1\"",
+        "video": "https://www.youtube.com/watch?v=9oN_X7l0_4U",
+        "link": "https://midjourney.com"
+    },
+    "📊 발표 왕자님 (Gamma)": {
+        "intro": "클릭 몇 번에 반짝반짝한 PPT를 완성해줘요!",
+        "strategy": [
+            "**Step 1. 뼈대(Outline) 맡기**: 주제 키워드만 던지고 감마가 짜주는 목차를 먼저 확인하세요.",
+            "**Step 2. AI 편집기 활용**: 특정 슬라이드만 마음에 안 들면 '이 페이지를 좀 더 전문적인 차트로 바꿔줘'라고 채팅으로 말하세요.",
+            "**Step 3. 폰트/테마 일괄 변경**: 한 번의 클릭으로 전체 분위기를 브랜드 컬러에 맞게 변신시킬 수 있어요!"
+        ],
+        "prompt_example": "📍 **주제 입력 팁!**\n> \"친환경 에너지의 중요성에 대한 초등학생용 발표 자료를 만들어줘. 사진은 자연 위주로 넣어줘.\"",
+        "video": "https://www.youtube.com/watch?v=uK8f_A6KIdM",
+        "link": "https://gamma.app"
+    }
 }
 
-# 3. UI 구현
-st.title("💡 AI Tool & Strategy Dashboard")
-st.markdown("분야별 최고의 AI 도구와 그에 맞는 **실전 활용 전략**을 확인하세요.")
+# 5. 화면 레이아웃 구성
+selected_tool = st.sidebar.selectbox("🎀 어떤 요정을 만날까요?", list(recipes.keys()))
+data = recipes[selected_tool]
 
-# 탭 메뉴 구성
-tabs = st.tabs(list(ai_database.keys()))
+col1, col2 = st.columns([1.2, 1], gap="large")
 
-for i, category in enumerate(ai_database.keys()):
-    with tabs[i]:
-        st.header(f"{category} 솔루션")
-        
-        for tool in ai_database[category]:
-            # 카드 섹션 스타일링
-            with st.expander(f"🔍 {tool['name']} 상세 전략 보기", expanded=True):
-                col1, col2 = st.columns([1, 1], gap="large")
-                
-                with col1:
-                    st.write(f"### {tool['name']}")
-                    st.success(f"**📌 핵심 전략:**\n\n{tool['strategy']}")
-                    st.link_button("공식 홈페이지 방문", tool['resource'])
-                
-                with col2:
-                    st.info("📺 **참고 영상 가이드**")
-                    # 유튜브 영상 연결
-                    st.video(tool['video_url'])
+with col1:
+    st.markdown(f"### {selected_tool}")
+    st.write(f"*{data['intro']}*")
+    
+    st.markdown('<div class="strategy-card">', unsafe_allow_html=True)
+    st.markdown("#### 👩‍🍳 시크릿 사용 레시피")
+    for step in data['strategy']:
+        st.markdown(f'<div class="step-box">{step}</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    st.info(data['prompt_example'])
+    st.link_button(f"{selected_tool.split()[-1]} 요정 만나러 가기 ✈️", data['link'])
 
-# 4. 하단 추가 자료 섹션
-st.divider()
-st.subheader("🔗 유용한 리서치 자료")
-col_res1, col_res2, col_res3 = st.columns(3)
-col_res1.markdown("[State of AI 2024 Report](https://www.stateof.ai/)")
-col_res2.markdown("[AI Tool Directory (There's an AI for that)](https://theresanaiforthat.com/)")
-col_res3.markdown("[Prompt Engineering Guide](https://www.promptingguide.ai/kr)")
+with col2:
+    st.markdown("#### 📺 1분 만에 마스터하는 영상 가이드")
+    st.video(data['video'])
+    st.caption("출처: 관련 도구 공식 유튜브 채널 및 전문가 튜토리얼")
+
+# 6. 푸터
+st.write("---")
+st.center_text = st.markdown("<p style='text-align: center;'>오늘도 AI랑 친해지는 달콤한 하루 되세요! 🍭</p>", unsafe_allow_html=True)
