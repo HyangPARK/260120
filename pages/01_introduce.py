@@ -4,11 +4,16 @@ from datetime import date
 import streamlit as st
 
 from io import BytesIO
+
 try:
     from docx import Document
+    from docx.shared import Pt
     DOCX_AVAILABLE = True
-except ModuleNotFoundError:
+except Exception:
+    Document = None
+    Pt = None
     DOCX_AVAILABLE = False
+
 
 
 
